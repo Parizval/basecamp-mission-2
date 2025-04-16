@@ -5,7 +5,7 @@ pragma solidity >=0.8.0 <0.9.0;
 import "hardhat/console.sol";
 
 // STEP 1: Import the Ownable contract from OpenZeppelin
-//import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * A smart contract for the The Graph Builders Basecamp challenges
@@ -13,8 +13,7 @@ import "hardhat/console.sol";
  */
 
 // STEP 2: Inherit the Ownable contract
-contract Comms {
-
+contract Comms is Ownable {
 	uint8 public channel;
 	uint8 public attempt;
 	bool public isCommsEstablished = false;
@@ -22,17 +21,20 @@ contract Comms {
 	event CommsEstablished(address indexed account, bool isCommsEstablished);
 
 	// STEP 3: Call the Ownable constructor with the owner address
-	constructor() {
+	constructor() Ownable(address(0xE451141fCE63EB38e85F08a991fC5878Ee6335b2)) {
 		channel = uint8(block.prevrandao % 6) + 1;
 	}
-	
+
 	// STEP 4: Implement the onlyOwner modifier
 	function establishComms() public {
 		require(!isCommsEstablished, "Comms already established");
 
 		attempt = uint8(block.prevrandao % 6) + 1;
 		console.log("Attempt: %s", attempt);
-		require(attempt == channel, "Attempt failed: Invalid channel, try again");
+		require(
+			attempt == channel,
+			"Attempt failed: Invalid channel, try again"
+		);
 
 		isCommsEstablished = true;
 		emit CommsEstablished(msg.sender, isCommsEstablished);
